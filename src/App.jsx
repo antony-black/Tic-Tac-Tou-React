@@ -2,12 +2,15 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { WinLines } from "./constants/GameConfig";
 import Rows from "./components/Rows";
+import Restart from "./components/Restart";
+import Status from "./components/Status";
 import "./index.scss";
 
 export default function App() {
   const [squares, setSquares] = useState(Array(9).fill(""));
   const [isXTurn, setXTurn] = useState(true);
   const [gameStatus, setGameStatus] = useState("");
+  const [isDisabled, setDisabled] = useState(false);
 
   const handleClick = (currentSquare) => {
     let copySquares = [...squares];
@@ -20,6 +23,7 @@ export default function App() {
   const handleRestart = () => {
     setSquares(Array(9).fill(""));
     setXTurn(true);
+    setDisabled(false);
   };
 
   const getWinner = (squares) => {
@@ -42,6 +46,7 @@ export default function App() {
     if (!getWinner(squares) && squares.every((square) => square !== "")) {
       setGameStatus(`There is no a winner. It's a draw. Let's play again!`);
     } else if (getWinner(squares)) {
+      setDisabled(true);
       setGameStatus(
         `There is the winner, ${getWinner(squares)}. Let's play again!`
       );
@@ -52,11 +57,13 @@ export default function App() {
 
   return (
     <div className="main-container">
-      <Rows squares={squares} handleClick={handleClick} />
-      <h2 className="game-status">{gameStatus}</h2>
-      <button className="restart" onClick={handleRestart}>
-        RESTART
-      </button>
+      <Rows
+        squares={squares}
+        handleClick={handleClick}
+        isDisabled={isDisabled}
+      />
+      <Status gameStatus={gameStatus} />
+      <Restart handleRestart={handleRestart} />
     </div>
   );
 }
